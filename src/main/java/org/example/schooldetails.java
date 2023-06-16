@@ -1,0 +1,7 @@
+package org.example;
+
+public class schooldetails {
+    public static void main(String[] args) {
+        System.out.println("I am Abhijit, and i am from rvm school");
+    }
+}
