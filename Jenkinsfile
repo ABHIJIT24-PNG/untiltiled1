@@ -1,5 +1,5 @@
 pipeline {
-    agent {JenkinsSlaveProductTeamA}
+    agent {'JenkinsSlaveProductTeamA'}
 
     stages {
         stage('test') {
