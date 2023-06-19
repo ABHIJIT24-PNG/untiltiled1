@@ -1,5 +1,5 @@
 pipeline {
-    agent {'JenkinSPTA'}
+    agent {label'JenkinsSlaveProductTeamA'}
 
     stages {
         stage('Build') {
