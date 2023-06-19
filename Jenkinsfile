@@ -1,20 +1,22 @@
 pipeline {
-    agent {'JenkinsSlaveProductTeamA'}
+     agent {'JenkinsSlaveProductTeamA'}
+  stages{
+     stage ('Build'){
+        steps{
+              echo 'Building app'
+             }
+      }
+     stage ('Testing'){
+        steps{
+           echo 'testing app'
+             }
+      }
+      stage ('Deploy'){
+        steps{
+           echo 'deploying app'
+             }
+      }
+   }
 
-    stages {
-        stage('test') {
-            steps {
-                echo 'Hello World'
-            }
-        }
-        stage('build') {
-            steps {
-                echo 'Hello World'
-            }
-        }
-        stage('Deploy') {
-            steps {
-                echo 'Hello World'
-            }
-        }
-    }
+ }
+    
