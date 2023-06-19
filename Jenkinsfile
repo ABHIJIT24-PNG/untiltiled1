@@ -17,14 +17,4 @@ pipeline {
                 echo 'Hello World'
             }
         }
-        
     }
-    post
-    {
-        always
-        {
-            emailext body: 'mail has been send', subject : 'pipeline status', to: 'hanumaleabhijit@gmail.com'
-        }
-        
-    }
-}
