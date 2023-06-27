@@ -1,3 +1,27 @@
+
+# Pull tomcat latest image compatible with jre11-alpine
+FROM tomcat:8.0.51-jre8-alpine
+MAINTAINER satyam@gmail.com
+# copy war file on to container
+COPY ./target/travelbooking-ms*.jar  /usr/local/tomcat/webapps
+EXPOSE  8080
+USER bookmytrip
+WORKDIR /usr/local/tomcat/webapps
+CMD ["catalina.sh","run"]
+
+
+
+git add --all
+git commit -m "hello"
+git push origin master
+
+=======================
+
+git add --all
+git commit --amned
+git push origin master -f
+=========================
+
 pipeline {
 
     options {
@@ -7,7 +31,7 @@ pipeline {
     agent any
 
     tools {
-        maven 'maven_3.8.8'
+        maven 'maven_3.8.7'
     }
 
     stages {
@@ -18,7 +42,11 @@ pipeline {
 				echo 'code compilation is completed'
             }
         }
-       
+        stage('Sonarqube Code Quality') {
+            environment {
+                scannerHome = tool 'qube'
+            }
+           
         stage('Code Package') {
             steps {
                 echo 'code packing is starting'
@@ -26,7 +54,66 @@ pipeline {
 				echo 'code packing is completed'
             }
         }
-       
-         
+        stage('Building & Tag Docker Image') {
+            steps {
+                echo 'Starting Building Docker Image'
+                sh 'docker build -t abhijit76/year2023 .'
+                sh 'docker build -t year2023 .'
+                echo 'Completed  Building Docker Image'
+            }
+        }
+        stage('Docker Image Scanning') {
+            steps {
+                echo 'Docker Image Scanning Started'
+                sh 'java -version'
+                echo 'Docker Image Scanning Started'
+            }
+        }
+        stage(' Docker push to Docker Hub') {
+           steps {
+              script {
+                 withCredentials([string(credentialsId: 'dockerhubCred', variable: 'dockerhubCred')]){
+                 sh 'docker login docker.io -u abhijit76 -p ${dockerhubCred}'
+                 echo "Push Docker Image to DockerHub : In Progress"
+                 sh 'docker push abhijit76/year2023:latest'
+                 echo "Push Docker Image to DockerHub : In Progress"
+                 sh 'whoami'
+                 }
+              }
+            }
+        }
+        stage(' Docker Image Push to Amazon ECR') {
+           steps {
+              script {
+                 withDockerRegistry([credentialsId:'ecr:ap-south-1:ecr-credentials', url:"https://559220132560.dkr.ecr.ap-south-1.amazonaws.com"]){
+                 sh """
+                 echo "List the docker images present in local"
+                 docker images
+                 echo "Tagging the Docker Image: In Progress"
+                 docker tag year2023:latest 280993177205.dkr.ecr.ap-south-1.amazonaws.com/year2023:latest
+                 echo "Tagging the Docker Image: Completed"
+                 echo "Push Docker Image to ECR : In Progress"
+                 docker push 280993177205.dkr.ecr.ap-south-1.amazonaws.com/year2023:latest
+                 echo "Push Docker Image to ECR : Completed"
+                 """
+                 }
+              }
+           }
+        }/***
+        stage('Upload the docker Image to Nexus') {
+           steps {
+              script {
+                 withCredentials([usernamePassword(credentialsId: 'nexus-credentials', usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')]){
+                 sh 'docker login http://43.204.229.125:8085/repository/travelbooking-ms/ -u admin -p ${PASSWORD}'
+                 echo "Push Docker Image to Nexus : In Progress"
+                 sh 'docker tag travelbooking-ms 43.204.229.125:8085/travelbooking-ms:latest'
+                 sh 'docker push 43.204.229.125:8085/travelbooking-ms'
+                 echo "Push Docker Image to Nexus : Completed"
+                 }
+              }
+            }
+        }***\
     }
 }
+
+
