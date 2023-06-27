@@ -1,15 +1,10 @@
 
 
 pipeline {
-
-    options {
-        buildDiscarder(logRotator(numToKeepStr: '5', artifactNumToKeepStr: '5'))
-    }
-
     agent any
 
     tools {
-        maven 'maven_3.8.7'
+        maven 'maven_3.8.8'
     }
 
     stages {
@@ -77,20 +72,7 @@ pipeline {
                  }
               }
            }
-        }/***
-        stage('Upload the docker Image to Nexus') {
-           steps {
-              script {
-                 withCredentials([usernamePassword(credentialsId: 'nexus-credentials', usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')]){
-                 sh 'docker login http://43.204.229.125:8085/repository/travelbooking-ms/ -u admin -p ${PASSWORD}'
-                 echo "Push Docker Image to Nexus : In Progress"
-                 sh 'docker tag travelbooking-ms 43.204.229.125:8085/travelbooking-ms:latest'
-                 sh 'docker push 43.204.229.125:8085/travelbooking-ms'
-                 echo "Push Docker Image to Nexus : Completed"
-                 }
-              }
-            }
-        }***\
+
     }
 }
 
