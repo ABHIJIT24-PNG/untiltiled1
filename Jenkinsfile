@@ -23,8 +23,8 @@ pipeline {
            stage('Building & Tag Docker Image') {
             steps {
                 echo 'Starting Building Docker Image'
-                sh 'docker build -t abhijit76/year2023 .'
-                sh 'docker build -t year2023 .'
+                sh '/usr/bin/docker build -t abhijit76/year2023 .'
+               sh '/usr/bin/docker build -t year2023 .'
                 echo 'Completed  Building Docker Image'
             }
         }
