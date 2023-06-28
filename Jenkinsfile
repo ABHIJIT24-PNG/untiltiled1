@@ -20,14 +20,18 @@ pipeline {
                 echo 'Code packaging is completed'
             }
         }
+         stages {
         stage('Building & Tagging Docker Image') {
             steps {
                 echo 'Starting Building Docker Image'
-                sh 'docker build -t abhijit76/year2023 .'
-                sh 'docker build -t year2023 .'
+                sh '''
+                    docker build -t abhijit76/year2023 .
+                    docker build -t year2023 .
+                '''
                 echo 'Completed Building Docker Image'
             }
         }
+    }
         stage('Docker Image Scanning') {
             steps {
                 echo 'Docker Image Scanning Started'
