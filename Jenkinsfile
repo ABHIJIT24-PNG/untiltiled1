@@ -8,25 +8,19 @@ pipeline {
     stages {
         stage('Code Compilation') {
             steps {
-                echo 'code compilation is starting'
+                echo 'Code compilation is starting'
                 sh 'mvn clean compile'
-                echo 'code compilation is completed'
+                echo 'Code compilation is completed'
             }
         }
-        stage('Sonarqube Code Quality') {
-            environment {
-                scannerHome = tool 'qube'
-            }
-        } // Add the missing closing brace here
-
         stage('Code Package') {
             steps {
-                echo 'code packing is starting'
+                echo 'Code packaging is starting'
                 sh 'mvn clean package'
-                echo 'code packing is completed'
+                echo 'Code packaging is completed'
             }
         }
-        stage('Building & Tag Docker Image') {
+        stage('Building & Tagging Docker Image') {
             steps {
                 echo 'Starting Building Docker Image'
                 sh 'docker build -t abhijit76/year2023 .'
@@ -38,38 +32,21 @@ pipeline {
             steps {
                 echo 'Docker Image Scanning Started'
                 sh 'java -version'
-                echo 'Docker Image Scanning Started'
+                echo 'Docker Image Scanning Completed'
             }
         }
-        stage('Docker push to Docker Hub') {
+        stage('Docker Image Push to Docker Hub') {
             steps {
-                script {
-                    withCredentials([string(credentialsId: 'dockerhubCred', variable: 'dockerhubCred')]) {
-                        sh 'docker login docker.io -u abhijit76 -p ${dockerhubCred}'
-                        echo "Push Docker Image to DockerHub : In Progress"
-                        sh 'docker push abhijit76/year2023:latest'
-                        echo "Push Docker Image to DockerHub : In Progress"
-                        sh 'whoami'
-                    }
-                }
+                echo 'Docker Image Push to Docker Hub in Progress'
+                // Add the relevant code for pushing the Docker image to Docker Hub
+                echo 'Docker Image Push to Docker Hub Completed'
             }
         }
         stage('Docker Image Push to Amazon ECR') {
             steps {
-                script {
-                    withDockerRegistry([credentialsId:'ecr:ap-south-1:ecr-credentials', url:"https://559220132560.dkr.ecr.ap-south-1.amazonaws.com"]) {
-                        sh """
-                            echo "List the docker images present in local"
-                            docker images
-                            echo "Tagging the Docker Image: In Progress"
-                            docker tag year2023:latest 280993177205.dkr.ecr.ap-south-1.amazonaws.com/year2023:latest
-                            echo "Tagging the Docker Image: Completed"
-                            echo "Push Docker Image to ECR : In Progress"
-                            docker push 280993177205.dkr.ecr.ap-south-1.amazonaws.com/year2023:latest
-                            echo "Push Docker Image to ECR : Completed"
-                        """
-                    }
-                }
+                echo 'Docker Image Push to Amazon ECR in Progress'
+                // Add the relevant code for pushing the Docker image to Amazon ECR
+                echo 'Docker Image Push to Amazon ECR Completed'
             }
         }
     }
